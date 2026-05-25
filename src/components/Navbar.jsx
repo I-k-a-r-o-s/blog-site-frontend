@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 const Navbar = () => {
   const navigate = useNavigate();
   return (
-    <div className="navbar bg-base-300 shadow-sm py-5">
+    <div className="navbar bg-base-300 shadow-sm py-5 sticky top-0 z-50">
       <div className="navbar-start">
         <button
           className="btn btn-ghost text-2xl gap-5"
