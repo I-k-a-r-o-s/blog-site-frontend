@@ -4,11 +4,16 @@ import { blog_data, comments_data } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import moment from "moment";
 import { PiUserCircleLight } from "react-icons/pi";
+import { FaFacebookSquare, FaTwitter} from "react-icons/fa";
+import Footer from "../components/Footer";
+import Loading from "../components/Loading";
 
 const Blog = () => {
   const { id } = useParams();
   const [blogData, setBlogData] = useState(null);
   const [commentData, setCommentData] = useState([]);
+  const [name, setName] = useState("");
+  const [userComment, setUserComment] = useState("");
 
   const fetchBlogData = async () => {
     const data = blog_data.find((item) => item._id === id);
@@ -17,6 +22,11 @@ const Blog = () => {
 
   const fetchComments = async () => {
     setCommentData(comments_data);
+  };
+
+  const addComment = async (e) => {
+    e.preventDefault();
+    console.log(name+"and"+userComment)
   };
 
   useEffect(() => {
@@ -41,8 +51,9 @@ const Blog = () => {
       <div className="mx-5 max-w-5xl md:mx-auto my-10 mt-6">
         <img src={blogData.image} alt="image" className="rounded-3xl mb-5" />
         <div>{blogData.description}</div>
+
         <div className="mt-14 mb-10 max-w-3xl mx-auto">
-          <p>{commentData.length} Comments.</p>
+          <p className="mb-4 font-semibold">{commentData.length} Comments.</p>
           <div className="flex flex-col gap-4">
             {commentData.map((item, index) => (
               <div
@@ -61,17 +72,47 @@ const Blog = () => {
             ))}
           </div>
         </div>
+
+        <div className="max-w-3xl mx-auto ">
+          <p className="font-semibold mb-4">Add your comment.</p>
+          <form
+            onSubmit={addComment}
+            className="flex flex-col items-start gap-4 max-w-lg"
+          >
+            <input
+              type="text"
+              placeholder="Name"
+              className="input"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <textarea
+              className="textarea"
+              placeholder="Comment"
+              required
+              value={userComment}
+              onChange={(e) => setUserComment(e.target.value)}
+            ></textarea>
+            <button className="btn btn-primary" type="submit">
+              Add Comment
+            </button>
+          </form>
+        </div>
+
+        <div className="my-24 max-w-3xl mx-auto">
+          <p className="font-semibold my-4">Share on</p>
+          <div className="flex gap-4">
+            <FaFacebookSquare size={20} />
+            <FaTwitter size={20} />
+          </div>
+        </div>
+
       </div>
+      <Footer/>
     </div>
   ) : (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="flex w-52 flex-col gap-4">
-        <div className="skeleton h-32 w-full"></div>
-        <div className="skeleton h-4 w-28"></div>
-        <div className="skeleton h-4 w-full"></div>
-        <div className="skeleton h-4 w-full"></div>
-      </div>
-    </div>
+    <Loading/>
   );
 };
 export default Blog;
