@@ -4,7 +4,7 @@ import { blog_data, comments_data } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import moment from "moment";
 import { PiUserCircleLight } from "react-icons/pi";
-import { FaFacebookSquare, FaTwitter} from "react-icons/fa";
+import { FaFacebookSquare, FaTwitter } from "react-icons/fa";
 import Footer from "../components/Footer";
 import Loading from "../components/Loading";
 
@@ -26,7 +26,7 @@ const Blog = () => {
 
   const addComment = async (e) => {
     e.preventDefault();
-    console.log(name+"and"+userComment)
+    console.log(name + "and" + userComment);
   };
 
   useEffect(() => {
@@ -35,6 +35,7 @@ const Blog = () => {
   }, []);
   return blogData ? (
     <div>
+      <Navbar />
       <div className="text-center mt-20">
         <p className="text-secondary py-4 font-medium">
           Published on {moment(blogData.createdAt).format("Do MMMM YYYY")}
@@ -107,12 +108,11 @@ const Blog = () => {
             <FaTwitter size={20} />
           </div>
         </div>
-
       </div>
-      <Footer/>
+      <Footer />
     </div>
   ) : (
-    <Loading/>
+    <Loading />
   );
 };
 export default Blog;
