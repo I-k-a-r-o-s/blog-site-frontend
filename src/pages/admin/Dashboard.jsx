@@ -70,7 +70,7 @@ const Dashboard = () => {
             </thead>
             <tbody>
               {/* row 1 */}
-              {(dashboardData.recent || dashboardData.recentBlogs || []).map((item, index) => (
+              {dashboardData.recentBlogs.map((item, index) => (
                 <TableItems
                   key={item._id}
                   blog={item}
