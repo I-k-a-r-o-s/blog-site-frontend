@@ -1,6 +1,7 @@
-import { BiLogIn } from "react-icons/bi";
+//import { BiLogIn } from "react-icons/bi";
 import logo from "../assets/logo.jpeg";
 import { useNavigate } from "react-router";
+import LoginModal from "./admin/LoginModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,13 +17,14 @@ const Navbar = () => {
         </button>
       </div>
       <div className="navbar-end">
-        <button
+        {/**<button
           className="btn btn-primary rounded-full gap-1"
           onClick={() => navigate("/admin")}
         >
           Login
           <BiLogIn size={20} />
-        </button>
+        </button> */}
+        <LoginModal/>
       </div>
     </div>
   );
