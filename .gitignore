@@ -25,3 +25,5 @@ assets.js
 *.njsproj
 *.sln
 *.sw?
+
+Table.jsx
