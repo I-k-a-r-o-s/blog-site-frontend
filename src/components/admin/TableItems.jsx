@@ -7,7 +7,7 @@ const TableItems = ({ blog, fetchBlogs, index }) => {
     <tr>
       <th>{index}</th>
       <td>{title}</td>
-      <td>{blogDate.toLocaleString()}</td>
+      <td>{blogDate.toLocaleDateString()}</td>
       <td>
         <p className={`${blog.isPublished ? "text-success" : "text-error"}`}>
           {blog.isPublished ? "Published" : "Unpublished"}
