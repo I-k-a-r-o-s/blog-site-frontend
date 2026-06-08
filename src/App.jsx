@@ -7,12 +7,15 @@ import Dashboard from "./pages/admin/Dashboard";
 import AddBlogPost from "./pages/admin/AddBlogPost";
 import AllBlogPosts from "./pages/admin/AllBlogPosts";
 import Comments from "./pages/admin/Comments";
+import { Toaster } from "react-hot-toast";
 
 import "quill/dist/quill.snow.css"
+
 
 const App = () => {
   return (
     <div>
+      <Toaster position="bottom-center" reverseOrder={false} />
       <ParticleBackground />
       <Routes>
         <Route path="/" element={<Home />} />
