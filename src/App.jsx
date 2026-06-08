@@ -10,9 +10,11 @@ import Comments from "./pages/admin/Comments";
 import { Toaster } from "react-hot-toast";
 
 import "quill/dist/quill.snow.css"
+import { useAppContext } from "./context/AppContext";
 
 
 const App = () => {
+  const {token}=useAppContext()
   return (
     <div>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -20,7 +22,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blog/:id" element={<Blog />} />
-        <Route path="/admin" element={true ? <Layout /> : <Home />}>
+        <Route path="/admin" element={token ? <Layout /> : <Home />}>
           <Route index element={<Dashboard />} />
           <Route path="addblogpost" element={<AddBlogPost />} />
           <Route path="allblogposts" element={<AllBlogPosts />} />
