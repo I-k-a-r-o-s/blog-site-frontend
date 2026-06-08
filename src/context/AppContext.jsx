@@ -8,7 +8,6 @@ export const AppContextProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
   const [input, setInput] = useState("");
 
-
   const fetchBlogs = async () => {
     try {
       const { data } = await api.get("/api/blog/all");
@@ -23,7 +22,7 @@ export const AppContextProvider = ({ children }) => {
     fetchBlogs();
 
     const token = localStorage.getItem("token");
-    if (token && !token === null) {
+    if (token) {
       setToken(token);
       api.defaults.headers.common["Authorization"] = `${token}`;
     }
