@@ -1,7 +1,22 @@
 import { IoSearch } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
+import { useAppContext } from "../context/AppContext";
+import { useRef } from "react";
+import { PiBroom } from "react-icons/pi";
 
 const Header = () => {
+  const { input, setInput } = useAppContext();
+  const inputRef = useRef();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setInput(inputRef.current.value);
+  };
+
+  const clear = () => {
+    setInput("");
+    inputRef.current.value = "";
+  };
   return (
     <div className="mx-8 sm:mx-16 xl:mx-24 relative">
       <div className="text-center mt-20 mb-8">
@@ -20,18 +35,25 @@ const Header = () => {
           matter its one word or a thousand!
         </p>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="join">
             <label className="input join-item">
-              <IoSearch size={20} />
               <input
                 type="search"
                 required
                 placeholder="Search for posts"
                 required
+                ref={inputRef}
               />
+              {input ? (
+                <PiBroom size={20} className="cursor-pointer" onClick={clear} />
+              ) : (
+                <IoSearch size={20} />
+              )}
             </label>
-            <button className="btn btn-primary join-item">Search</button>
+            <button type="submit" className="btn btn-primary join-item">
+              Search
+            </button>
           </div>
         </form>
       </div>
