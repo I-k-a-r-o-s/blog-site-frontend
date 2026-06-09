@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router";
+import DOMPurify from "dompurify";
 
 const BlogCard = ({ blog }) => {
   const { _id, title, description, category, image } = blog;
-
+  const safeHtml = DOMPurify.sanitize(description);
   const navigate = useNavigate();
   return (
     <div
@@ -28,9 +29,12 @@ const BlogCard = ({ blog }) => {
           <span className="badge badge-sm badge-soft badge-secondary">
             {category}
           </span>
-          <p className="text-xs">
-            {description ? `${description.slice(0, 80)}...` : ""}
-          </p>
+          <p
+            className="text-xs"
+            dangerouslySetInnerHTML={{
+              __html: safeHtml ? `${safeHtml.slice(0, 80)}...` : "",
+            }}
+          />
         </div>
       </div>
       <div></div>
