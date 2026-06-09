@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import Loading from "../components/Loading";
 import toast from "react-hot-toast";
 import { api } from "../api/Axios";
+import DOMPurify from "dompurify";
 
 const Blog = () => {
   const { id } = useParams();
@@ -59,6 +60,8 @@ const Blog = () => {
     }
   };
 
+  const safeHtml = DOMPurify.sanitize(blogData?.description || "");
+
   useEffect(() => {
     fetchBlogData();
     fetchComments();
@@ -89,8 +92,9 @@ const Blog = () => {
               alt="image"
               className="rounded-3xl mb-5"
             />
-            <div>{blogData.description}</div>
 
+            <div dangerouslySetInnerHTML={{ __html: safeHtml }} />
+            
             <div className="mt-14 mb-10 max-w-3xl mx-auto">
               <p className="mb-4 font-semibold">
                 {commentData.length} Comments.
