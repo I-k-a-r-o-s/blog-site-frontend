@@ -2,26 +2,20 @@ import { Outlet, useNavigate } from "react-router";
 import logo from "../../assets/logo.jpeg";
 import Sidebar from "../../components/admin/Sidebar";
 import { FiSidebar } from "react-icons/fi";
-
-{
-  /**
-        <>
-    <div className="flex">
-        <img src={logo} alt="logo" className="w-32 sm:w-40 cursor-pointer"
-        onClick={()=>{navigate("/")}}
-        />
-        <button>Logout</button>
-    </div>
-    <div className="flex">
-        <Sidebar/>
-        <Outlet/>
-    </div>
-    </>
-         */
-}
+import { useAppContext } from "../../context/AppContext";
+import { api } from "../../api/Axios";
 
 const Layout = () => {
   const navigate = useNavigate();
+  const { setToken } = useAppContext();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    delete api.defaults.headers.common["Authorization"];
+    navigate("/");
+  };
+
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -49,7 +43,9 @@ const Layout = () => {
             </div>
           </div>
           <div className="navbar-end">
-            <button className="btn btn-primary">Logout</button>
+            <button className="btn btn-primary" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </nav>
         {/* Page content here */}
