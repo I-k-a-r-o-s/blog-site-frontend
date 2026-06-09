@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { BsCloudUpload } from "react-icons/bs";
 import Quill from "quill";
+import toast from "react-hot-toast";
+import { api } from "../../api/Axios";
 
 const AddBlogPost = () => {
   const editorRef = useRef(null);
@@ -8,20 +10,46 @@ const AddBlogPost = () => {
 
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
-  const [subtitle, setSubtitle] = useState("");
+  const [subTitle, setSubTitle] = useState("");
   const [category, setCategory] = useState("StartuP");
   const [isPublished, setIsPublished] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const blogCategories = [
-    "All",
-    "Technology",
-    "Startup",
-    "Lifestyle",
-    "Finance",
-  ];
+  const blogCategories = ["Technology", "Startup", "Lifestyle", "Finance"];
 
   const handleSubmit = async (e) => {
-    e.preventDefauult();
+    e.preventDefault();
+    try {
+      setLoading(true);
+
+      const blog = {
+        title,
+        subTitle,
+        description: quillRef.current.root.innerHTML,
+        category,
+        isPublished,
+      };
+
+      const formData = new FormData();
+      formData.append("blog", JSON.stringify(blog));
+      formData.append("image", image);
+
+      const { data } = await api.post("/api/blog/add", formData);
+      if (data.success) {
+        toast.success(data.message);
+        setImage(false);
+        setTitle("");
+        quillRef.current.root.innerHTML = "";
+        setCategory("Startup");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log("Error in handleSubmit!", error);
+      toast.error("internal Server Error!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const generateContent = async () => {};
@@ -47,7 +75,6 @@ const AddBlogPost = () => {
                 <input
                   type="file"
                   id="image"
-                  hidden
                   required
                   onChange={(e) => setImage(e.target.files[0])}
                 />
@@ -78,8 +105,8 @@ const AddBlogPost = () => {
             className="input"
             placeholder="Title"
             required
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
+            value={subTitle}
+            onChange={(e) => setSubTitle(e.target.value)}
           />
 
           <p className="mt-4 mb-2">Blog Description</p>
@@ -113,12 +140,20 @@ const AddBlogPost = () => {
               type="checkbox"
               className="checkbox"
               checked={isPublished}
-              onChange={(e) => setIsPublished(e.target.chcked)}
+              onChange={(e) => setIsPublished(e.target.checked)}
             />
           </div>
 
-          <button className="btn btn-primary mt-8" type="submit">
-            Add Blog
+          <button
+            disabled={loading}
+            className="btn btn-primary mt-8"
+            type="submit"
+          >
+            {loading ? (
+              <span className="loading loading-spinner"></span>
+            ) : (
+              "Add Blog"
+            )}
           </button>
         </div>
       </form>
