@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { blog_data, comments_data } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import moment from "moment";
 import { PiUserCircleLight } from "react-icons/pi";
 import { FaFacebookSquare, FaTwitter } from "react-icons/fa";
 import Footer from "../components/Footer";
 import Loading from "../components/Loading";
+import toast from "react-hot-toast";
+import { api } from "../api/Axios";
 
 const Blog = () => {
   const { id } = useParams();
@@ -16,103 +17,144 @@ const Blog = () => {
   const [userComment, setUserComment] = useState("");
 
   const fetchBlogData = async () => {
-    const data = blog_data.find((item) => item._id === id);
-    setBlogData(data);
+    try {
+      const { data } = await api.get(`/api/blog/${id}`);
+      data.success ? setBlogData(data.blog) : toast.error(data.message);
+    } catch (error) {
+      console.log("Error in fetchBlogData!:", error);
+      toast.error("Internal Server Error!");
+    }
   };
 
   const fetchComments = async () => {
-    setCommentData(comments_data);
+    try {
+      const { data } = await api.post("/api/blog/comments", { id });
+      if (data.success) {
+        setCommentData(data.comments);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Internal Server Error!");
+    }
   };
 
   const addComment = async (e) => {
     e.preventDefault();
-    console.log(name + "and" + userComment);
+    try {
+      const { data } = await api.post("/api/blog/add-comments", {
+        blog: id,
+        name,
+        content: userComment,
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setName("");
+        setUserComment("");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Internal Server Error!");
+    }
   };
 
   useEffect(() => {
     fetchBlogData();
     fetchComments();
   }, []);
-  return blogData ? (
+  return (
     <div>
       <Navbar />
-      <div className="text-center mt-20">
-        <p className="text-secondary py-4 font-medium">
-          Published on {moment(blogData.createdAt).format("Do MMMM YYYY")}
-        </p>
-        <h1 className="text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-info">
-          {blogData.title}
-        </h1>
-        <h2 className="my-5 max-w-lg truncate mx-auto">{blogData.subTitle}</h2>
-        <span className="badge badge-outline badge-primary font-semibold">
-          Author
-        </span>
-      </div>
-
-      <div className="mx-5 max-w-5xl md:mx-auto my-10 mt-6">
-        <img src={blogData.image} alt="image" className="rounded-3xl mb-5" />
-        <div>{blogData.description}</div>
-
-        <div className="mt-14 mb-10 max-w-3xl mx-auto">
-          <p className="mb-4 font-semibold">{commentData.length} Comments.</p>
-          <div className="flex flex-col gap-4">
-            {commentData.map((item, index) => (
-              <div
-                key={index}
-                className="relative max-w-xl p-4 bg-base-100 rounded border border-base-300"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <PiUserCircleLight size={20} />
-                  <p className="font-medium">{item.name}</p>
-                </div>
-                <p className="text-sm max-w-md ml-8">{item.content}</p>
-                <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs">
-                  {moment(item.createdAt).fromNow()}
-                </div>
-              </div>
-            ))}
+      {blogData ? (
+        <>
+          <div className="text-center mt-20">
+            <p className="text-secondary py-4 font-medium">
+              Published on {moment(blogData.createdAt).format("Do MMMM YYYY")}
+            </p>
+            <h1 className="text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-info">
+              {blogData.title}
+            </h1>
+            <h2 className="my-5 max-w-lg truncate mx-auto">
+              {blogData.subTitle}
+            </h2>
+            <span className="badge badge-outline badge-primary font-semibold">
+              Author
+            </span>
           </div>
-        </div>
 
-        <div className="max-w-3xl mx-auto ">
-          <p className="font-semibold mb-4">Add your comment.</p>
-          <form
-            onSubmit={addComment}
-            className="flex flex-col items-start gap-4 max-w-lg"
-          >
-            <input
-              type="text"
-              placeholder="Name"
-              className="input"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+          <div className="mx-5 max-w-5xl md:mx-auto my-10 mt-6">
+            <img
+              src={blogData.image}
+              alt="image"
+              className="rounded-3xl mb-5"
             />
-            <textarea
-              className="textarea"
-              placeholder="Comment"
-              required
-              value={userComment}
-              onChange={(e) => setUserComment(e.target.value)}
-            ></textarea>
-            <button className="btn btn-primary" type="submit">
-              Add Comment
-            </button>
-          </form>
-        </div>
+            <div>{blogData.description}</div>
 
-        <div className="my-24 max-w-3xl mx-auto">
-          <p className="font-semibold my-4">Share on</p>
-          <div className="flex gap-4">
-            <FaFacebookSquare size={20} />
-            <FaTwitter size={20} />
+            <div className="mt-14 mb-10 max-w-3xl mx-auto">
+              <p className="mb-4 font-semibold">
+                {commentData.length} Comments.
+              </p>
+              <div className="flex flex-col gap-4">
+                {commentData.map((item, index) => (
+                  <div
+                    key={index}
+                    className="relative max-w-xl p-4 bg-base-100 rounded border border-base-300"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <PiUserCircleLight size={20} />
+                      <p className="font-medium">{item.name}</p>
+                    </div>
+                    <p className="text-sm max-w-md ml-8">{item.content}</p>
+                    <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs">
+                      {moment(item.createdAt).fromNow()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="max-w-3xl mx-auto ">
+              <p className="font-semibold mb-4">Add your comment.</p>
+              <form
+                onSubmit={addComment}
+                className="flex flex-col items-start gap-4 max-w-lg"
+              >
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="input"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <textarea
+                  className="textarea"
+                  placeholder="Comment"
+                  required
+                  value={userComment}
+                  onChange={(e) => setUserComment(e.target.value)}
+                ></textarea>
+                <button className="btn btn-primary" type="submit">
+                  Add Comment
+                </button>
+              </form>
+            </div>
+
+            <div className="my-24 max-w-3xl mx-auto">
+              <p className="font-semibold my-4">Share on</p>
+              <div className="flex gap-4">
+                <FaFacebookSquare size={20} />
+                <FaTwitter size={20} />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <Footer />
+          <Footer />
+        </>
+      ) : (
+        <Loading />
+      )}
     </div>
-  ) : (
-    <Loading />
   );
 };
 export default Blog;
