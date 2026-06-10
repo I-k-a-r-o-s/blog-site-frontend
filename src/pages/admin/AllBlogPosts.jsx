@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { blog_data } from "../../assets/assets";
 import TableItems from "../../components/admin/TableItems";
 import { api } from "../../api/Axios";
 import toast from "react-hot-toast";
