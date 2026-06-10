@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { dashboard_data } from "../../assets/assets";
 import { FaBlog } from "react-icons/fa";
 import { TfiCommentAlt, TfiWrite } from "react-icons/tfi";
 import { GrDocumentUpdate } from "react-icons/gr";
 import TableItems from "../../components/admin/TableItems";
+import toast from "react-hot-toast";
+import { api } from "../../api/Axios";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -14,7 +15,15 @@ const Dashboard = () => {
   });
 
   const fetchDashboardData = async () => {
-    setDashboardData(dashboard_data);
+    try {
+      const { data } = await api.get("/api/admin/dashboard");
+      data.success
+        ? setDashboardData(data.dashboardData)
+        : toast.error(data.message);
+    } catch (error) {
+      toast.error("Internal Server Error!");
+      console.log("Error in fetchDashboardData!:", error);
+    }
   };
 
   useEffect(() => {
