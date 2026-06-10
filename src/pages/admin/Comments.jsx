@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { comments_data } from "../../assets/assets";
 import CommentsTable from "../../components/admin/CommentsTable";
+import { api } from "../../api/Axios";
+import toast from "react-hot-toast";
 
 const Comments = () => {
   const [comments, setComments] = useState([]);
   const [filter, setFilter] = useState("Not Approved");
 
   const fetchComments = async () => {
-    setComments(comments_data);
+    try {
+      const { data } = await api.get("/api/admin/comments");
+      data.success ? setComments(data.comments) : toast.error(data.message);
+    } catch (error) {
+      toast.error("Internal Server Error!");
+      console.log("Error in fetchComments!:", error);
+    }
   };
 
   useEffect(() => {
