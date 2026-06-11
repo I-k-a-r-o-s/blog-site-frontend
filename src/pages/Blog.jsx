@@ -82,7 +82,7 @@ const Blog = () => {
               {blogData.subTitle}
             </h2>
             <span className="badge badge-outline badge-primary font-semibold">
-              Author
+              {blogData.category}
             </span>
           </div>
 
