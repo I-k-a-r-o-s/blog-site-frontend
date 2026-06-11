@@ -3,6 +3,8 @@ import { BsCloudUpload } from "react-icons/bs";
 import Quill from "quill";
 import toast from "react-hot-toast";
 import { api } from "../../api/Axios";
+import { parse } from "marked";
+import DOMPurify from "dompurify";
 
 const AddBlogPost = () => {
   const editorRef = useRef(null);
@@ -52,7 +54,30 @@ const AddBlogPost = () => {
     }
   };
 
-  const generateContent = async () => {};
+  const generateBlogPost = async () => {
+    try {
+      if (!title) {
+        return toast.error("Title is REQUIRED!");
+      }
+
+      setLoading(true);
+      quillRef.current.root.innerHTML = "";
+
+      const { data } = await api.post("/api/blog/generate", { prompt: title });
+      if (data.success) {
+        quillRef.current.root.innerHTML = DOMPurify.sanitize(
+          parse(data.aiBlog),
+        );
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log("Error in generateBlogPost!", error);
+      toast.error("Internal Server Error!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!quillRef.current && editorRef.current) {
@@ -114,9 +139,14 @@ const AddBlogPost = () => {
             <div ref={editorRef}></div>
             <button
               className="btn btn-secondary absolute bottom-1 right-2 ml-2 px-4 py-1.5"
-              onClick={generateContent}
+              onClick={generateBlogPost}
+              disabled={loading}
             >
-              Generate with AI
+              {loading ? (
+                <span className="loading loading-dots loading-sm"></span>
+              ) : (
+                "Generate with AI"
+              )}
             </button>
           </div>
 
